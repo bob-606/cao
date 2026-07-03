@@ -1,0 +1,115 @@
+{{define "content"}}
+<div class="page">
+    <h1>Aircraft</h1>
+
+    <div class="card">
+        <h3>Add Aircraft</h3>
+        <form action="/aircraft" method="POST" class="inline-form flex-wrap">
+            <input type="hidden" name="_csrf" value="{{$.CSRFToken}}">
+            <div class="form-group">
+                <label for="registration">Registration</label>
+                <input type="text" id="registration" name="registration" required placeholder="ES-ANS">
+            </div>
+            <div class="form-group">
+                <label for="type">Type</label>
+                <input type="text" id="type" name="type" required placeholder="Airbus A320">
+            </div>
+            <div class="form-group">
+                <label for="variant">Variant</label>
+                <input type="text" id="variant" name="variant" placeholder="214">
+            </div>
+            <div class="form-group">
+                <label for="model">Model</label>
+                <input type="text" id="model" name="model" placeholder="CFM56-5B">
+            </div>
+            <div class="form-group">
+                <label for="serialNumber">Serial #</label>
+                <input type="text" id="serialNumber" name="serialNumber" placeholder="1234">
+            </div>
+            <div class="form-group">
+                <label for="yearOfManufacture">Year</label>
+                <input type="number" id="yearOfManufacture" name="yearOfManufacture" min="1900" max="2030" class="input-short">
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    <option value="airplane">Airplane</option>
+                    <option value="helicopter">Helicopter</option>
+                    <option value="sailplane">Sailplane</option>
+                    <option value="balloon">Balloon</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="engineType">Engine Type</label>
+                <select id="engineType" name="engineType">
+                    <option value="">Select</option>
+                    <option value="piston">Piston</option>
+                    <option value="turboprop">Turboprop</option>
+                    <option value="turbofan">Turbofan</option>
+                    <option value="turboshaft">Turboshaft</option>
+                    <option value="electric">Electric</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="apuType">APU Type</label>
+                <input type="text" id="apuType" name="apuType" placeholder="e.g. APS3200" class="input-short">
+            </div>
+            <div class="form-group">
+                <label for="propType">Propeller Type</label>
+                <input type="text" id="propType" name="propType" placeholder="MTV-12-B" class="input-short">
+            </div>
+            <div class="form-group">
+                <label for="mtow">MTOW (kg)</label>
+                <input type="number" id="mtow" name="mtow" min="0" class="input-short">
+            </div>
+            <div class="form-group">
+                <label for="maxPax">Max Pax</label>
+                <input type="number" id="maxPax" name="maxPax" min="0" class="input-short">
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+
+    {{if .Aircraft}}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Registration</th>
+                    <th>Type / Variant</th>
+                    <th>MSN</th>
+                    <th>Year</th>
+                    <th>Category</th>
+                    <th>Engine</th>
+                    <th>MTOW</th>
+                    <th>Records</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Aircraft}}
+                <tr>
+                    <td class="font-bold">{{.Registration}}</td>
+                    <td>{{.Type}}{{if .Variant}} / {{.Variant}}{{end}}</td>
+                    <td>{{if .SerialNumber}}{{.SerialNumber}}{{else}}-{{end}}</td>
+                    <td>{{if .YearOfManufacture}}{{.YearOfManufacture}}{{else}}-{{end}}</td>
+                    <td>{{.Category}}</td>
+                    <td>{{if .EngineType}}{{.EngineType}}{{else}}-{{end}}</td>
+                    <td>{{if .MTOW}}{{.MTOW}} kg{{else}}-{{end}}</td>
+                    <td>{{.RecordCount}}</td>
+                    <td>
+                        <form action="/aircraft/{{.ID}}/delete" method="POST" data-lua="confirm-delete">
+                            <input type="hidden" name="_csrf" value="{{$.CSRFToken}}">
+                            <button type="submit" class="btn-link-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+    {{else}}
+    <p class="text-muted">No aircraft added yet.</p>
+    {{end}}
+</div>
+{{end}}

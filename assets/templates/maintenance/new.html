@@ -1,0 +1,174 @@
+{{define "content"}}
+<div class="page page-narrow">
+    <h1>New Maintenance Record</h1>
+    <form action="/maintenance/new" method="POST" class="flight-form" data-lua="flight-form">
+        <input type="hidden" name="_csrf" value="{{.CSRFToken}}">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="aircraftId">Aircraft</label>
+                <select id="aircraftId" name="aircraftId" required>
+                    <option value="">Select aircraft</option>
+                    {{range .Aircraft}}
+                    <option value="{{.ID}}">{{.Registration}} ({{.Type}})</option>
+                    {{else}}
+                    <option value="" disabled>No aircraft — add one first</option>
+                    {{end}}
+                </select>
+                <a href="/aircraft" class="form-hint">Add aircraft</a>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="ataChapter">ATA Chapter</label>
+                <select id="ataChapter" name="ataChapter">
+                    <option value="">Select ATA chapter</option>
+                    {{range .ATAChapters}}
+                    <option value="{{.Chapter}}">ATA {{.Chapter}} — {{.Name}}</option>
+                    {{end}}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="organizationId">Organization</label>
+                <select id="organizationId" name="organizationId">
+                    <option value="">Select organization</option>
+                    {{range .Organizations}}
+                    <option value="{{.ID}}">{{.Name}} ({{.Type}})</option>
+                    {{else}}
+                    <option value="" disabled>No organizations — add one first</option>
+                    {{end}}
+                </select>
+                <a href="/organizations" class="form-hint">Add organization</a>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="workType">Work Type</label>
+                <select id="workType" name="workType">
+                    <option value="scheduled">Scheduled</option>
+                    <option value="unscheduled">Unscheduled</option>
+                    <option value="modification">Modification</option>
+                    <option value="rectification">Rectification</option>
+                    <option value="inspection">Inspection</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="maintenanceCategory">Maintenance Category</label>
+                <select id="maintenanceCategory" name="maintenanceCategory">
+                    <option value="airframe">Airframe</option>
+                    <option value="engine">Engine</option>
+                    <option value="electrical">Electrical</option>
+                    <option value="avionics">Avionics</option>
+                    <option value="structures">Structures</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:16px">
+            <label for="description">Description *</label>
+            <input type="text" id="description" name="description" required placeholder="e.g. Landing gear system inspection">
+        </div>
+
+        <div class="form-row form-row-4">
+            <div class="form-group">
+                <label for="totalTime">Total Time (min) *</label>
+                <input type="number" id="totalTime" name="totalTime" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="supervisedTime">Supervised Time (min)</label>
+                <input type="number" id="supervisedTime" name="supervisedTime" min="0">
+            </div>
+            <div class="form-group">
+                <label for="aircraftTsn">Aircraft TSN</label>
+                <input type="number" id="aircraftTsn" name="aircraftTsn" min="0" placeholder="FH">
+            </div>
+            <div class="form-group">
+                <label for="aircraftCsn">Aircraft CSN</label>
+                <input type="number" id="aircraftCsn" name="aircraftCsn" min="0" placeholder="Cycles">
+            </div>
+        </div>
+
+        <h3>Work Order References</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="workOrder">Work Order #</label>
+                <input type="text" id="workOrder" name="workOrder" placeholder="WO-2026-001">
+            </div>
+            <div class="form-group">
+                <label for="taskCard">Task Card #</label>
+                <input type="text" id="taskCard" name="taskCard" placeholder="32-41-01-01">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="defectRef">Defect Reference</label>
+                <input type="text" id="defectRef" name="defectRef" placeholder="D-2026-001">
+            </div>
+            <div class="form-group">
+                <label for="location">Location</label>
+                <select id="location" name="location">
+                    <option value="">Select location</option>
+                    <option value="hangar">Hangar</option>
+                    <option value="line">Line</option>
+                    <option value="workshop">Workshop</option>
+                    <option value="apron">Apron</option>
+                </select>
+            </div>
+        </div>
+
+        <h3>Supervisor / Certifying Staff</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="supervisorName">Supervisor Name</label>
+                <input type="text" id="supervisorName" name="supervisorName" placeholder="Toomas T.">
+            </div>
+            <div class="form-group">
+                <label for="supervisorCert">Supervisor Cert #</label>
+                <input type="text" id="supervisorCert" name="supervisorCert" placeholder="B1.1-00123">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="certifyingStaffName">Certifying Staff Name</label>
+                <input type="text" id="certifyingStaffName" name="certifyingStaffName">
+            </div>
+            <div class="form-group">
+                <label for="certifyingStaffCert">Certifying Staff Cert #</label>
+                <input type="text" id="certifyingStaffCert" name="certifyingStaffCert">
+            </div>
+        </div>
+
+        <h3>Component (if applicable)</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="componentName">Component Name</label>
+                <input type="text" id="componentName" name="componentName" placeholder="Wheel assembly, battery...">
+            </div>
+            <div class="form-group">
+                <label for="componentPartNumber">Part Number</label>
+                <input type="text" id="componentPartNumber" name="componentPartNumber" placeholder="MTV-12-B/180-5">
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+            <label for="componentSerialNumber">Serial Number</label>
+            <input type="text" id="componentSerialNumber" name="componentSerialNumber" placeholder="P-2024-789">
+        </div>
+
+        <div class="form-group">
+            <label for="remarks">Remarks</label>
+            <textarea id="remarks" name="remarks" rows="3" placeholder="Additional notes, findings, references..."></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Record</button>
+            <a href="/maintenance" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{{end}}

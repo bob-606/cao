@@ -1,0 +1,48 @@
+{{define "content"}}
+<div class="auth-page">
+    <div class="auth-card" style="text-align:center;">
+        <h1>Waiting for {{.Provider}}</h1>
+        <p style="color:var(--fg-dim);margin-bottom:24px;font-size:13px;">
+            Check your phone and approve the sign-in request.
+        </p>
+        <div id="status-msg" style="color:var(--fg-dim);font-size:12px;">Waiting for you...</div>
+        <div id="error-msg" style="display:none;color:var(--aurora-red);font-size:13px;margin-top:16px;"></div>
+        <p class="auth-link" style="margin-top:24px;"><a href="/auth/signin">Cancel</a></p>
+    </div>
+</div>
+<script>
+(function() {
+    var token = "{{.SessionToken}}";
+    var pollURL = "{{.PollURL}}";
+    var completeURL = "/auth/estonia/complete/" + token;
+
+    function poll() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", pollURL, true);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var resp = JSON.parse(xhr.responseText);
+                if (resp.status === "COMPLETE") {
+                    window.location.href = completeURL;
+                } else if (resp.status === "ERROR") {
+                    document.getElementById("status-msg").style.display = "none";
+                    var err = document.getElementById("error-msg");
+                    err.textContent = resp.error || "Authentication failed";
+                    err.style.display = "block";
+                } else {
+                    setTimeout(poll, 2000);
+                }
+            } else {
+                setTimeout(poll, 2000);
+            }
+        };
+        xhr.onerror = function() {
+            setTimeout(poll, 2000);
+        };
+        xhr.send();
+    }
+
+    setTimeout(poll, 1500);
+})();
+</script>
+{{end}}

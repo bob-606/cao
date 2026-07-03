@@ -1,0 +1,116 @@
+{{define "content"}}
+<div class="page">
+    <h1>Reports</h1>
+
+    <div class="stats-grid stats-grid-5">
+        <div class="stat-card">
+            <div class="stat-label">Total Records</div>
+            <div class="stat-value">{{.TotalRecords}}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Time</div>
+            <div class="stat-value">{{.TotalTime}}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Supervised Time</div>
+            <div class="stat-value">{{.SupervisedTime}}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Supervision</div>
+            <div class="stat-value" style="color:{{if ge .SupervisionRatio 70.0}}var(--aurora-green){{else}}var(--aurora-red){{end}}">{{printf "%.1f" .SupervisionRatio}}%</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">70% Target</div>
+            <div class="stat-value" style="color:{{if ge .SupervisionRatio 70.0}}var(--aurora-green){{else}}var(--aurora-red){{end}}">{{if ge .SupervisionRatio 70.0}}ACHIEVED{{else}}NOT MET{{end}}</div>
+        </div>
+    </div>
+
+    <div class="report-grid">
+        <div class="card">
+            <h3>By Aircraft</h3>
+            {{range .ByAircraft}}
+            <div class="report-row">
+                <span>{{.Name}}</span>
+                <span class="text-muted">{{.Count}} tasks · {{formatTime .Time}}</span>
+            </div>
+            {{else}}
+            <p class="text-muted">No data</p>
+            {{end}}
+        </div>
+
+        <div class="card">
+            <h3>By Work Type</h3>
+            {{range .ByWorkType}}
+            <div class="report-row">
+                <span>{{.Name}}</span>
+                <span class="text-muted">{{.Count}} tasks · {{formatTime .Time}}</span>
+            </div>
+            {{else}}
+            <p class="text-muted">No data</p>
+            {{end}}
+        </div>
+
+        <div class="card">
+            <h3>By ATA Chapter (Top 15)</h3>
+            {{range .ByATA}}
+            <div class="report-row">
+                <span>{{.Name}}</span>
+                <span class="text-muted">{{.Count}} tasks · {{formatTime .Time}}</span>
+            </div>
+            {{else}}
+            <p class="text-muted">No data</p>
+            {{end}}
+        </div>
+
+        <div class="card">
+            <h3>By Maintenance Category</h3>
+            {{range .ByCategory}}
+            <div class="report-row">
+                <span>{{.Name}}</span>
+                <span class="text-muted">{{.Count}} tasks · {{formatTime .Time}}</span>
+            </div>
+            {{else}}
+            <p class="text-muted">No data</p>
+            {{end}}
+        </div>
+
+        <div class="card">
+            <h3>Monthly Hours</h3>
+            {{range .ByMonth}}
+            <div class="report-row">
+                <span>{{.Name}}</span>
+                <span class="text-muted">{{formatTime .Time}}</span>
+            </div>
+            {{else}}
+            <p class="text-muted">No data</p>
+            {{end}}
+        </div>
+
+        <div class="card">
+            <h3>By Organization</h3>
+            {{range .ByOrganization}}
+            <div class="report-row">
+                <span>{{.Name}}</span>
+                <span class="text-muted">{{.Count}} tasks · {{formatTime .Time}}</span>
+            </div>
+            {{else}}
+            <p class="text-muted">No data</p>
+            {{end}}
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+        <h3>Part-66 Supervision Rule</h3>
+        <p class="text-muted" style="font-size:13px">
+            EASA Part-66 requires that at least 70% of the total maintenance experience
+            is gained under the supervision of a qualified certifying staff.
+            Your current supervision ratio is <strong>{{printf "%.1f" .SupervisionRatio}}%</strong>.
+            {{if ge .SupervisionRatio 70.0}}
+            <span style="color:var(--aurora-green)">✔ Requirement met.</span>
+            {{else}}
+            <span style="color:var(--aurora-red)">✘ Additional supervised work needed.</span>
+            {{end}}
+        </p>
+    </div>
+</div>
+{{end}}

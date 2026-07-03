@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{.Theme}}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAO Logbook</title>
+    <link id="font-link" rel="stylesheet" href="data:text/css,/* no font */">
+    <link id="font-link-inter" rel="stylesheet" href="data:text/css,/* no font */">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/fengari/fengari.js" defer></script>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="nav-brand">CAO Logbook</a>
+            <div class="nav-links">
+                <a href="/maintenance" class="nav-link">Maintenance</a>
+                <a href="/aircraft" class="nav-link">Aircraft</a>
+                <a href="/organizations" class="nav-link">Organizations</a>
+                <a href="/certifications" class="nav-link">Certifications</a>
+                <a href="/reports" class="nav-link">Reports</a>
+            </div>
+            <div class="nav-right">
+                <button class="theme-btn" id="theme-toggle" aria-label="Toggle theme">~</button>
+                <a href="/auth/signout" class="nav-link">Sign Out</a>
+            </div>
+        </div>
+    </nav>
+    <main>
+        {{template "content" .}}
+    </main>
+    <script src="/static/lua/main.lua" type="application/lua"></script>
+</body>
+</html>

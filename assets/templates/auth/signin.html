@@ -1,0 +1,34 @@
+{{define "content"}}
+<div class="auth-page">
+    <div class="auth-card">
+        <h1>Sign In</h1>
+        {{if .Error}}<div class="alert alert-error">{{.Error}}</div>{{end}}
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+            <a href="/auth/demo" class="btn btn-primary btn-full" style="justify-content:center;">Demo Login (no account needed)</a>
+            <a href="/auth/mid" class="btn btn-full" style="justify-content:center;">Mobile-ID</a>
+            <a href="/auth/sid" class="btn btn-full" style="justify-content:center;">Smart-ID</a>
+        </div>
+        <details style="margin-bottom:16px;">
+            <summary style="cursor:pointer;font-size:12px;color:var(--fg-dim);text-transform:uppercase;letter-spacing:1px;text-align:center;">More options</summary>
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+                <a href="/auth/google/login" class="btn btn-full" style="justify-content:center;">Sign in with Google</a>
+                <a href="/auth/github/login" class="btn btn-full" style="justify-content:center;">Sign in with GitHub</a>
+                <a href="/auth/magic" class="btn btn-full" style="justify-content:center;">Send Magic Link</a>
+            </div>
+            <form action="/auth/signin" method="POST" style="margin-top:12px;display:flex;flex-direction:column;gap:12px;">
+                <input type="hidden" name="_csrf" value="{{.CSRFToken}}">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="password">
+                </div>
+                <button type="submit" class="btn btn-full" style="justify-content:center;">Sign In</button>
+            </form>
+            <p class="auth-link">Don't have an account? <a href="/auth/register">Register</a></p>
+        </details>
+    </div>
+</div>
+{{end}}

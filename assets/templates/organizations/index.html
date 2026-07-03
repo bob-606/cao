@@ -1,0 +1,86 @@
+{{define "content"}}
+<div class="page">
+    <h1>Organizations</h1>
+
+    <div class="card">
+        <h3>Add Organization</h3>
+        <form action="/organizations" method="POST" class="inline-form flex-wrap">
+            <input type="hidden" name="_csrf" value="{{.CSRFToken}}">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required placeholder="Nordic CAMO OÜ">
+            </div>
+            <div class="form-group">
+                <label for="type">Type</label>
+                <select id="type" name="type">
+                    <option value="camo">CAMO</option>
+                    <option value="cao">CAO</option>
+                    <option value="145">Part-145</option>
+                    <option value="ato">ATO</option>
+                    <option value="line">Line Station</option>
+                    <option value="workshop">Workshop</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="easaPartNumber">EASA Part Number</label>
+                <input type="text" id="easaPartNumber" name="easaPartNumber" placeholder="EASA.145.0123">
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" placeholder="Tallinn Airport">
+            </div>
+            <div class="form-group">
+                <label for="country">Country</label>
+                <select id="country" name="country">
+                    <option value="EE">Estonia</option>
+                    <option value="LV">Latvia</option>
+                    <option value="LT">Lithuania</option>
+                    <option value="FI">Finland</option>
+                    <option value="SE">Sweden</option>
+                    <option value="PL">Poland</option>
+                    <option value="DE">Germany</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+
+    {{if .Organizations}}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>EASA Part #</th>
+                    <th>Country</th>
+                    <th>Records</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Organizations}}
+                <tr>
+                    <td class="font-bold">{{.Name}}</td>
+                    <td>{{.Type}}</td>
+                    <td>{{if .EASAPartNumber}}{{.EASAPartNumber}}{{else}}-{{end}}</td>
+                    <td>{{.Country}}</td>
+                    <td>{{.RecordCount}}</td>
+                    <td>
+                        <form action="/organizations/{{.ID}}/delete" method="POST" data-lua="confirm-delete">
+                            <input type="hidden" name="_csrf" value="{{$.CSRFToken}}">
+                            <button type="submit" class="btn-link-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+    {{else}}
+    <p class="text-muted">No organizations added yet.</p>
+    {{end}}
+</div>
+{{end}}

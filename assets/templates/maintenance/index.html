@@ -1,0 +1,123 @@
+{{define "content"}}
+<div class="page">
+    <div class="page-header">
+        <h1>Maintenance Records</h1>
+        <form action="/export/pdf" method="GET" class="inline-form" data-lua="export-form" style="margin-bottom:0">
+            {{range $k, $v := .QueryMap}}<input type="hidden" name="{{$k}}" value="{{$v}}">{{end}}
+            <button type="submit" class="btn btn-secondary">Export PDF</button>
+        </form>
+        <a href="/maintenance/new" class="btn btn-primary">+ New Record</a>
+    </div>
+
+    <details class="filter-box" {{if .HasFilters}}open{{end}}>
+        <summary class="filter-summary">Filters</summary>
+        <form class="filter-form" method="GET" action="/maintenance" data-lua="filter-form">
+            <div class="filter-group">
+                <label>Date from</label>
+                <input type="date" name="dateFrom" value="{{index .QueryMap "dateFrom"}}">
+            </div>
+            <div class="filter-group">
+                <label>Date to</label>
+                <input type="date" name="dateTo" value="{{index .QueryMap "dateTo"}}">
+            </div>
+            <div class="filter-group">
+                <label>Aircraft</label>
+                <select name="aircraftId">
+                    <option value="">All</option>
+                    {{range .Aircraft}}
+                    <option value="{{.ID}}" {{if eq ((index $.QueryMap "aircraftId")) .ID}}selected{{end}}>{{.Registration}}</option>
+                    {{end}}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Organization</label>
+                <select name="organizationId">
+                    <option value="">All</option>
+                    {{range .Organizations}}
+                    <option value="{{.ID}}" {{if eq ((index $.QueryMap "organizationId")) .ID}}selected{{end}}>{{.Name}}</option>
+                    {{end}}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Work Type</label>
+                <select name="workType">
+                    <option value="">All</option>
+                    <option value="scheduled" {{if eq ((index .QueryMap "workType")) "scheduled"}}selected{{end}}>Scheduled</option>
+                    <option value="unscheduled" {{if eq ((index .QueryMap "workType")) "unscheduled"}}selected{{end}}>Unscheduled</option>
+                    <option value="modification" {{if eq ((index .QueryMap "workType")) "modification"}}selected{{end}}>Modification</option>
+                    <option value="rectification" {{if eq ((index .QueryMap "workType")) "rectification"}}selected{{end}}>Rectification</option>
+                    <option value="inspection" {{if eq ((index .QueryMap "workType")) "inspection"}}selected{{end}}>Inspection</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Category</label>
+                <select name="maintenanceCategory">
+                    <option value="">All</option>
+                    <option value="airframe" {{if eq ((index .QueryMap "maintenanceCategory")) "airframe"}}selected{{end}}>Airframe</option>
+                    <option value="engine" {{if eq ((index .QueryMap "maintenanceCategory")) "engine"}}selected{{end}}>Engine</option>
+                    <option value="electrical" {{if eq ((index .QueryMap "maintenanceCategory")) "electrical"}}selected{{end}}>Electrical</option>
+                    <option value="avionics" {{if eq ((index .QueryMap "maintenanceCategory")) "avionics"}}selected{{end}}>Avionics</option>
+                    <option value="structures" {{if eq ((index .QueryMap "maintenanceCategory")) "structures"}}selected{{end}}>Structures</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>ATA Chapter</label>
+                <select name="ataChapter">
+                    <option value="">All</option>
+                    {{range .ATAChapters}}
+                    <option value="{{.Chapter}}" {{if eq ((index $.QueryMap "ataChapter")) .Chapter}}selected{{end}}>ATA {{.Chapter}} — {{.Name}}</option>
+                    {{end}}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Search</label>
+                <input type="text" name="q" placeholder="Description, WO, task card..." value="{{index .QueryMap "q"}}">
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+                <a href="/maintenance" class="btn btn-secondary btn-sm">Clear</a>
+            </div>
+        </form>
+    </details>
+
+    {{if .Records}}
+    <p class="text-muted">{{len .Records}} records · {{.TotalTime}} total · {{.TotalSupervised}} supervised</p>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Aircraft</th>
+                    <th>ATA</th>
+                    <th>Description</th>
+                    <th>Work Type</th>
+                    <th>Category</th>
+                    <th>Time</th>
+                    <th>Supervised</th>
+                    <th>Location</th>
+                    <th>Org</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Records}}
+                <tr>
+                    <td><a href="/maintenance/{{.ID}}">{{formatDate .Date}}</a></td>
+                    <td>{{.Aircraft}}</td>
+                    <td>{{if .ATAChapter}}ATA {{.ATAChapter}}{{else}}-{{end}}</td>
+                    <td>{{truncate .Description 40}}</td>
+                    <td>{{.WorkType}}</td>
+                    <td>{{.MaintenanceCategory}}</td>
+                    <td>{{formatTime .TotalTime}}</td>
+                    <td>{{if gt .SupervisedTime 0}}{{formatTime .SupervisedTime}}{{else}}-{{end}}</td>
+                    <td>{{if .Location}}{{.Location}}{{else}}-{{end}}</td>
+                    <td>{{if .OrganizationName}}{{.OrganizationName}}{{else}}-{{end}}</td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+    {{else}}
+    <p class="text-muted">No maintenance records yet.</p>
+    {{end}}
+</div>
+{{end}}

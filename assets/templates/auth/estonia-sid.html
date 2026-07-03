@@ -1,0 +1,17 @@
+{{define "content"}}
+<div class="auth-page">
+    <div class="auth-card">
+        <h1>Smart-ID</h1>
+        {{if .Error}}<div class="alert alert-error">{{.Error}}</div>{{end}}
+        <form action="/auth/sid/init" method="POST">
+            <input type="hidden" name="_csrf" value="{{.CSRFToken}}">
+            <div class="form-group">
+                <label for="id_code">Isikukood</label>
+                <input type="text" id="id_code" name="id_code" placeholder="30303039914" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Sign in with Smart-ID</button>
+        </form>
+        <p class="auth-link"><a href="/auth/signin">Back to sign in</a></p>
+    </div>
+</div>
+{{end}}

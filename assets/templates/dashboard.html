@@ -1,0 +1,44 @@
+{{define "content"}}
+<div class="page">
+    <div class="page-header">
+        <h1>Dashboard</h1>
+        <a href="/maintenance/new" class="btn btn-primary">+ New Record</a>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Maintenance Records</div>
+            <div class="stat-value">{{.TotalRecords}}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Time</div>
+            <div class="stat-value">{{.TotalTime}}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Aircraft</div>
+            <div class="stat-value">{{.AircraftCount}}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Organizations</div>
+            <div class="stat-value">{{.OrgCount}}</div>
+        </div>
+    </div>
+
+    <h2>Recent Maintenance Records</h2>
+    {{if .RecentRecords}}
+    <div class="flight-list">
+        {{range .RecentRecords}}
+        <a href="/maintenance/{{.ID}}" class="flight-row">
+            <div>
+                <div class="flight-route">{{.Aircraft}} — {{.Description}}</div>
+                <div class="flight-meta">{{formatDate .Date}} · {{formatTime .TotalTime}} · {{.WorkType}}</div>
+            </div>
+            <div class="flight-role">{{if .OrgName}}{{.OrgName}}{{end}}</div>
+        </a>
+        {{end}}
+    </div>
+    {{else}}
+    <p class="text-muted">No records yet. Log your first maintenance task!</p>
+    {{end}}
+</div>
+{{end}}

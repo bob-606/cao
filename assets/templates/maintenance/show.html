@@ -1,0 +1,138 @@
+{{define "content"}}
+<div class="page page-narrow">
+    <div class="page-header">
+        <h1>Maintenance Record</h1>
+        <form action="/maintenance/{{.RecordID}}/delete" method="POST" data-lua="confirm-delete">
+            <input type="hidden" name="_csrf" value="{{.CSRFToken}}">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+
+    <div class="detail-card">
+        <div class="detail-grid">
+            <div>
+                <div class="detail-label">Date</div>
+                <div class="detail-value">{{formatDate .Record.Date}}</div>
+            </div>
+            <div>
+                <div class="detail-label">Aircraft</div>
+                <div class="detail-value">{{.Record.AircraftReg}} ({{.Record.AircraftType}})</div>
+            </div>
+            <div>
+                <div class="detail-label">ATA Chapter</div>
+                <div class="detail-value">{{if .Record.ATAChapter}}ATA {{.Record.ATAChapter}} — {{.ATAName}}{{else}}-{{end}}</div>
+            </div>
+            <div>
+                <div class="detail-label">Category</div>
+                <div class="detail-value">{{.Record.MaintenanceCategory}}</div>
+            </div>
+            <div>
+                <div class="detail-label">Work Type</div>
+                <div class="detail-value">{{.Record.WorkType}}</div>
+            </div>
+            <div>
+                <div class="detail-label">Location</div>
+                <div class="detail-value">{{if .Record.Location}}{{.Record.Location}}{{else}}-{{end}}</div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Description</h3>
+            <p>{{.Record.Description}}</p>
+        </div>
+
+        <div class="detail-section">
+            <h3>Times</h3>
+            <div class="detail-grid detail-grid-4">
+                <div>
+                    <div class="detail-label">Total Time</div>
+                    <div class="detail-value">{{.TotalTime}}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Supervised</div>
+                    <div class="detail-value">{{.SupervisedTimeStr}}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Aircraft TSN</div>
+                    <div class="detail-value">{{if .Record.AircraftTSN}}{{.Record.AircraftTSN}} FH{{else}}-{{end}}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Aircraft CSN</div>
+                    <div class="detail-value">{{if .Record.AircraftCSN}}{{.Record.AircraftCSN}}{{else}}-{{end}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>References</h3>
+            <div class="detail-grid">
+                <div>
+                    <div class="detail-label">Work Order</div>
+                    <div class="detail-value">{{if .Record.WorkOrder}}{{.Record.WorkOrder}}{{else}}-{{end}}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Task Card</div>
+                    <div class="detail-value">{{if .Record.TaskCard}}{{.Record.TaskCard}}{{else}}-{{end}}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Defect Ref</div>
+                    <div class="detail-value">{{if .Record.DefectRef}}{{.Record.DefectRef}}{{else}}-{{end}}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Organization</div>
+                    <div class="detail-value">{{if .Record.OrgName}}{{.Record.OrgName}} ({{.Record.OrgType}}){{else}}-{{end}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Supervisor / Certifying Staff</h3>
+            <div class="detail-grid">
+                <div>
+                    <div class="detail-label">Supervisor</div>
+                    <div class="detail-value">{{if .Record.SupervisorName}}{{.Record.SupervisorName}}{{else}}-{{end}}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Supervisor Cert #</div>
+                    <div class="detail-value">{{if .Record.SupervisorCert}}{{.Record.SupervisorCert}}{{else}}-{{end}}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Certifying Staff</div>
+                    <div class="detail-value">{{if .Record.CertName}}{{.Record.CertName}}{{else}}-{{end}}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Certifying Staff Cert #</div>
+                    <div class="detail-value">{{if .Record.CertCert}}{{.Record.CertCert}}{{else}}-{{end}}</div>
+                </div>
+            </div>
+        </div>
+
+        {{if .Record.CompName}}
+        <div class="detail-section">
+            <h3>Component</h3>
+            <div class="detail-grid">
+                <div>
+                    <div class="detail-label">Component</div>
+                    <div class="detail-value">{{.Record.CompName}}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Part Number</div>
+                    <div class="detail-value">{{if .Record.PartNumber}}{{.Record.PartNumber}}{{else}}-{{end}}</div>
+                </div>
+                <div>
+                    <div class="detail-label">Serial Number</div>
+                    <div class="detail-value">{{if .Record.SerialNumber}}{{.Record.SerialNumber}}{{else}}-{{end}}</div>
+                </div>
+            </div>
+        </div>
+        {{end}}
+
+        {{if .Record.Remarks}}
+        <div class="detail-section">
+            <div class="detail-label">Remarks</div>
+            <p>{{.Record.Remarks}}</p>
+        </div>
+        {{end}}
+    </div>
+</div>
+{{end}}

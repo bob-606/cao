@@ -1,0 +1,151 @@
+{{define "content"}}
+<div class="page">
+    <div class="page-header">
+        <h1>Certifications & Authorizations</h1>
+    </div>
+
+    {{if .Expired}}
+    <div class="alert alert-error">
+        <strong>Expired</strong>
+        {{range .Expired}}
+        <div>{{.Name}} {{if .Category}}({{.Category}}){{end}} ({{.Authority}}) — expired {{formatDate .ExpiryDate}}</div>
+        {{end}}
+    </div>
+    {{end}}
+
+    {{if .ExpiringSoon}}
+    <div class="alert alert-warning">
+        <strong>Expiring Soon (within 30 days)</strong>
+        {{range .ExpiringSoon}}
+        <div>{{.Name}} {{if .Category}}({{.Category}}){{end}} ({{.Authority}}) — expires {{formatDate .ExpiryDate}}</div>
+        {{end}}
+    </div>
+    {{end}}
+
+    <div class="stats-grid" style="margin-bottom:16px">
+        <div class="stat-card">
+            <div class="stat-label">Total Experience</div>
+            <div class="stat-value">{{.TotalMinutes}} min</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Supervised</div>
+            <div class="stat-value">{{.SupervisedMinutes}} min</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Supervision Ratio</div>
+            <div class="stat-value" style="color:{{if ge .SupervisionRatio 70.0}}var(--aurora-green){{else}}var(--aurora-red){{end}}">{{printf "%.1f" .SupervisionRatio}}%</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Add Certification</h3>
+        <form action="/certifications" method="POST" class="inline-form flex-wrap">
+            <input type="hidden" name="_csrf" value="{{.CSRFToken}}">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required placeholder="Part-66 B1.1">
+            </div>
+            <div class="form-group">
+                <label for="type">Type</label>
+                <select id="type" name="type">
+                    <option value="license">License</option>
+                    <option value="type_rating">Type Rating</option>
+                    <option value="company_authorization">Company Authorization</option>
+                    <option value="training">Training</option>
+                    <option value="medical">Medical</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    <option value="">Select</option>
+                    <option value="B1.1">B1.1 — Aeroplane Turbine</option>
+                    <option value="B1.2">B1.2 — Aeroplane Piston</option>
+                    <option value="B1.3">B1.3 — Helicopter Turbine</option>
+                    <option value="B1.4">B1.4 — Helicopter Piston</option>
+                    <option value="B2">B2 — Avionics</option>
+                    <option value="B3">B3 — Light Aircraft</option>
+                    <option value="L1">L1 — Light Aircraft</option>
+                    <option value="L2">L2 — Sailplanes</option>
+                    <option value="L3">L3 — Balloons</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="aircraftType">Aircraft Type</label>
+                <input type="text" id="aircraftType" name="aircraftType" placeholder="A320, C172...">
+            </div>
+            <div class="form-group">
+                <label for="authority">Authority</label>
+                <select id="authority" name="authority">
+                    <option value="EASA">EASA</option>
+                    <option value="FAA">FAA</option>
+                    <option value="UK CAA">UK CAA</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="issueDate">Issue Date</label>
+                <input type="date" id="issueDate" name="issueDate">
+            </div>
+            <div class="form-group">
+                <label for="expiryDate">Expiry Date</label>
+                <input type="date" id="expiryDate" name="expiryDate">
+            </div>
+            <div class="form-group">
+                <label for="scope">Scope / Limitations</label>
+                <input type="text" id="scope" name="scope" placeholder="e.g. Line replacement only">
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+
+    {{if .Certifications}}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Category</th>
+                    <th>Aircraft Type</th>
+                    <th>Authority</th>
+                    <th>Issue Date</th>
+                    <th>Expiry Date</th>
+                    <th>Status</th>
+                    <th>Scope</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Certifications}}
+                <tr>
+                    <td class="font-bold">{{.Name}}</td>
+                    <td>{{.Type}}</td>
+                    <td>{{if .Category}}{{.Category}}{{else}}-{{end}}</td>
+                    <td>{{if .AircraftType}}{{.AircraftType}}{{else}}-{{end}}</td>
+                    <td>{{.Authority}}</td>
+                    <td>{{if .IssueDate}}{{formatDate .IssueDate}}{{else}}-{{end}}</td>
+                    <td>{{if .ExpiryDate}}{{formatDate .ExpiryDate}}{{else}}-{{end}}</td>
+                    <td>
+                        {{if eq .Status "expired"}}<span class="status-expired">Expired</span>{{end}}
+                        {{if eq .Status "expiring"}}<span class="status-warning">Expiring Soon</span>{{end}}
+                        {{if eq .Status "valid"}}<span class="status-valid">Valid</span>{{end}}
+                        {{if eq .Status ""}}<span class="text-muted">No expiry</span>{{end}}
+                    </td>
+                    <td>{{if .Scope}}{{.Scope}}{{else}}-{{end}}</td>
+                    <td>
+                        <form action="/certifications/{{.ID}}/delete" method="POST" data-lua="confirm-delete">
+                            <input type="hidden" name="_csrf" value="{{$.CSRFToken}}">
+                            <button type="submit" class="btn-link-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+    {{else}}
+    <p class="text-muted">No certifications added yet.</p>
+    {{end}}
+</div>
+{{end}}
