@@ -130,6 +130,29 @@ function showConfirm(message, callback)
     doc.body:appendChild(overlay)
 end
 
+-- Toggle engine/glider fields based on aircraft category
+function setupAircraftCategoryToggle()
+    local sel = doc:querySelector('select[data-lua="aircraft-category"]')
+    if not sel then return end
+
+    local engineFields = doc:getElementById("engineFields")
+    local gliderFields = doc:getElementById("gliderFields")
+
+    function toggleFields()
+        local cat = sel.value
+        if cat == "sailplane" then
+            if engineFields then engineFields.style.display = "none" end
+            if gliderFields then gliderFields.style.display = "" end
+        else
+            if engineFields then engineFields.style.display = "" end
+            if gliderFields then gliderFields.style.display = "none" end
+        end
+    end
+
+    sel:addEventListener("change", toggleFields)
+    toggleFields()
+end
+
 -- Validate flight form
 function setupFlightFormValidation()
     local forms = doc:querySelectorAll('form[data-lua="flight-form"]')
@@ -186,6 +209,7 @@ end
     setupThemeToggle()
     watchSystemTheme()
     setupConfirmDialogs()
+    setupAircraftCategoryToggle()
     setupFlightFormValidation()
     setupAutoFilter()
     setDefaultDate()

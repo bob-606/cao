@@ -29,6 +29,8 @@ func AircraftIndex(w http.ResponseWriter, r *http.Request) {
 		propType := r.FormValue("propType")
 		mtow := parseInt(r.FormValue("mtow"))
 		maxPax := parseInt(r.FormValue("maxPax"))
+		wingSpan := parseFloat(r.FormValue("wingSpan"))
+		emptyWeight := parseInt(r.FormValue("emptyWeight"))
 
 		if reg == "" || typ == "" {
 			http.Redirect(w, r, "/aircraft", http.StatusSeeOther)
@@ -40,7 +42,8 @@ func AircraftIndex(w http.ResponseWriter, r *http.Request) {
 		}
 
 		id := db.GenerateID()
-		var y, m, mp *int64
+		var y, m, mp, ew *int64
+		var ws *float64
 		if year > 0 {
 			y = &year
 		}
@@ -50,12 +53,18 @@ func AircraftIndex(w http.ResponseWriter, r *http.Request) {
 		if maxPax > 0 {
 			mp = &maxPax
 		}
+		if emptyWeight > 0 {
+			ew = &emptyWeight
+		}
+		if wingSpan > 0 {
+			ws = &wingSpan
+		}
 		_, err := db.DB.Exec(
 			`INSERT INTO aircraft (id, registration, type, variant, model, serial_number, year_of_manufacture,
-			 category, engine_type, apu_type, prop_type, mtow, max_pax, owner_id)
-			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			 category, engine_type, apu_type, prop_type, mtow, max_pax, wing_span_m, empty_weight_kg, owner_id)
+			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 			id, reg, typ, nullIfEmpty(variant), nullIfEmpty(model), nullIfEmpty(serial), y,
-			category, nullIfEmpty(engineType), nullIfEmpty(apuType), nullIfEmpty(propType), m, mp, userID,
+			category, nullIfEmpty(engineType), nullIfEmpty(apuType), nullIfEmpty(propType), m, mp, ws, ew, userID,
 		)
 		if err != nil {
 			log.Printf("Insert aircraft error: %v", err)
@@ -67,7 +76,7 @@ func AircraftIndex(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.DB.Query(`
 		SELECT a.id, a.registration, a.type, a.variant, a.model, a.serial_number,
 			a.year_of_manufacture, a.category, a.engine_type, a.apu_type, a.prop_type,
-			a.mtow, a.max_pax,
+			a.mtow, a.max_pax, a.wing_span_m, a.empty_weight_kg,
 			(SELECT COUNT(*) FROM maintenance_records m WHERE m.aircraft_id = a.id) as record_count
 		FROM aircraft a WHERE a.owner_id = ? ORDER BY a.registration
 	`, userID)
@@ -82,6 +91,8 @@ func AircraftIndex(w http.ResponseWriter, r *http.Request) {
 		Variant, Model, SerialNumber     *string
 		YearOfManufacture, MTOW, MaxPax  *int64
 		EngineType, APUType, PropType    *string
+		WingSpanM                        *float64
+		EmptyWeightKg                    *int64
 		RecordCount                      int
 	}
 	var aircraft []ac
@@ -89,7 +100,7 @@ func AircraftIndex(w http.ResponseWriter, r *http.Request) {
 		var a ac
 		rows.Scan(&a.ID, &a.Registration, &a.Type, &a.Variant, &a.Model, &a.SerialNumber,
 			&a.YearOfManufacture, &a.Category, &a.EngineType, &a.APUType, &a.PropType,
-			&a.MTOW, &a.MaxPax, &a.RecordCount)
+			&a.MTOW, &a.MaxPax, &a.WingSpanM, &a.EmptyWeightKg, &a.RecordCount)
 		aircraft = append(aircraft, a)
 	}
 

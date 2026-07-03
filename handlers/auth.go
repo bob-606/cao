@@ -125,14 +125,18 @@ func seedDemoData(userID string) {
 	ac3 := db.GenerateID()
 	ac4 := db.GenerateID()
 	ac5 := db.GenerateID()
-	y1, y2, y3, y4 := int64(2005), int64(2010), int64(1998), int64(2015)
-	mt1, mt2, mt3 := int64(75000), int64(9000), int64(1200)
+	ac6 := db.GenerateID()
+	y1, y2, y3, y4, y5 := int64(2005), int64(2010), int64(1998), int64(2015), int64(1987)
+	mt1, mt2, mt3, mt4 := int64(75000), int64(9000), int64(1200), int64(525)
 	mp1 := int64(180)
+	ws1 := 15.0
+	ew1 := int64(230)
 	db.DB.Exec("INSERT INTO aircraft (id, registration, type, variant, model, serial_number, year_of_manufacture, category, engine_type, mtow, max_pax, owner_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", ac1, "ES-ANS", "Airbus A320", "214", "CFM56-5B", "1234", &y1, "airplane", "turbofan", &mt1, &mp1, userID)
 	db.DB.Exec("INSERT INTO aircraft (id, registration, type, variant, model, serial_number, year_of_manufacture, category, engine_type, mtow, owner_id) VALUES (?,?,?,?,?,?,?,?,?,?)", ac2, "ES-TLV", "Cessna 172R", "R", "IO-360", "172R-1234", &y2, "airplane", "piston", &mt2, userID)
 	db.DB.Exec("INSERT INTO aircraft (id, registration, type, serial_number, year_of_manufacture, category, engine_type, mtow, owner_id) VALUES (?,?,?,?,?,?,?,?,?)", ac3, "ES-CMK", "Beechjet 400A", "RK-209", &y3, "airplane", "turbofan", &mt2, userID)
 	db.DB.Exec("INSERT INTO aircraft (id, registration, type, model, serial_number, year_of_manufacture, category, engine_type, mtow, owner_id) VALUES (?,?,?,?,?,?,?,?,?,?)", ac4, "YR-5678", "IAR-46", "Rotax 912", "IAR-123", &y4, "airplane", "piston", &mt3, userID)
 	db.DB.Exec("INSERT INTO aircraft (id, registration, type, model, category, engine_type, owner_id) VALUES (?,?,?,?,?,?,?)", ac5, "ES-TRT", "Robinson R44", "Raven II", "helicopter", "piston", userID)
+	db.DB.Exec("INSERT INTO aircraft (id, registration, type, variant, serial_number, year_of_manufacture, category, mtow, wing_span_m, empty_weight_kg, owner_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)", ac6, "ES-3302", "LS-4", "b", "4505", &y5, "sailplane", &mt4, &ws1, &ew1, userID)
 
 	org1 := db.GenerateID()
 	org2 := db.GenerateID()
@@ -176,8 +180,11 @@ func seedDemoData(userID string) {
 
 	mr6 := db.GenerateID()
 	mr7 := db.GenerateID()
+	mr8 := db.GenerateID()
+	mr9 := db.GenerateID()
+	mr10 := db.GenerateID()
 	db.DB.Exec(`INSERT INTO maintenance_records (id, date, aircraft_id, ata_chapter, work_order, description, work_type, maintenance_category, total_time, supervised_time, supervisor_name, organization_id, location, user_id)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		mr6, "2026-07-12", ac5, "63", "WO-2026-006",
 		"Main rotor gearbox oil analysis sample", "scheduled", "airframe",
 		30, 15, "Kalle K.", org1, "hangar", userID)
@@ -186,6 +193,22 @@ func seedDemoData(userID string) {
 		mr7, "2026-07-14", ac1, "21", "WO-2026-007",
 		"Monthly cabin air filter check", "scheduled", "airframe",
 		15, org1, "line", userID)
+	db.DB.Exec(`INSERT INTO maintenance_records (id, date, aircraft_id, ata_chapter, work_order, description, work_type, maintenance_category, total_time, supervised_time, supervisor_name, supervisor_cert, organization_id, location, aircraft_tsn, aircraft_csn, component_part_number, component_serial_number, component_name, remarks, user_id)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		mr8, "2026-06-01", ac6, "57", "GL-2026-001",
+		"Annual inspection — wing attachment and control cables", "inspection", "airframe",
+		240, 120, "Peeter P.", "B1.1-00345", org1, "hangar", int64(850), int64(320),
+		"LS4-WA-001", "W-2024-015", "Main wing attachment fitting", "Found one cracked bolt at rear spar. Replaced per TMM.", userID)
+	db.DB.Exec(`INSERT INTO maintenance_records (id, date, aircraft_id, ata_chapter, work_order, description, work_type, maintenance_category, total_time, organization_id, location, user_id)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		mr9, "2026-06-15", ac6, "32",
+		"Landing gear wheel bearing repack and tire check", "scheduled", "airframe",
+		60, org1, "hangar", userID)
+	db.DB.Exec(`INSERT INTO maintenance_records (id, date, aircraft_id, ata_chapter, work_order, description, work_type, maintenance_category, total_time, organization_id, location, component_part_number, component_serial_number, component_name, user_id)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		mr10, "2026-07-01", ac6, "27", "GL-2026-002",
+		"Rigging check — aileron and airbrake travel", "inspection", "airframe",
+		90, org1, "hangar", "LS4-CB-002", "CB-2022-008", "Airbrake control cable", userID)
 
 	c1 := db.GenerateID()
 	c2 := db.GenerateID()

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"strings"
@@ -56,6 +57,13 @@ func init() {
 			return r
 		},
 		"truncate": truncate,
+		"printf":   fmt.Sprintf,
+		"derefFloat": func(f *float64) float64 {
+			if f == nil {
+				return 0
+			}
+			return *f
+		},
 	}
 
 	for _, page := range pages {
@@ -116,6 +124,31 @@ func parseInt(s string) int64 {
 	for _, c := range s {
 		if c >= '0' && c <= '9' {
 			n = n*10 + int64(c-'0')
+		} else {
+			return 0
+		}
+	}
+	return n
+}
+
+func parseFloat(s string) float64 {
+	var n float64
+	var dec float64 = 1
+	inDec := false
+	for _, c := range s {
+		if c >= '0' && c <= '9' {
+			d := float64(c - '0')
+			if inDec {
+				dec *= 10
+				n += d / dec
+			} else {
+				n = n*10 + d
+			}
+		} else if c == '.' || c == ',' {
+			if inDec {
+				return 0
+			}
+			inDec = true
 		} else {
 			return 0
 		}

@@ -413,6 +413,7 @@ tr:hover td { background: var(--bg-hover); }
     flex-wrap: wrap;
 }
 .flex-wrap { flex-wrap: wrap; }
+.inline-form-group { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
 .input-short { width: 120px; }
 .flight-form { margin-top: 16px; }
 

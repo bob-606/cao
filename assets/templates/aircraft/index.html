@@ -8,23 +8,19 @@
             <input type="hidden" name="_csrf" value="{{$.CSRFToken}}">
             <div class="form-group">
                 <label for="registration">Registration</label>
-                <input type="text" id="registration" name="registration" required placeholder="ES-ANS">
+                <input type="text" id="registration" name="registration" required placeholder="ES-3302">
             </div>
             <div class="form-group">
                 <label for="type">Type</label>
-                <input type="text" id="type" name="type" required placeholder="Airbus A320">
+                <input type="text" id="type" name="type" required placeholder="LS-4">
             </div>
             <div class="form-group">
                 <label for="variant">Variant</label>
-                <input type="text" id="variant" name="variant" placeholder="214">
-            </div>
-            <div class="form-group">
-                <label for="model">Model</label>
-                <input type="text" id="model" name="model" placeholder="CFM56-5B">
+                <input type="text" id="variant" name="variant" placeholder="b">
             </div>
             <div class="form-group">
                 <label for="serialNumber">Serial #</label>
-                <input type="text" id="serialNumber" name="serialNumber" placeholder="1234">
+                <input type="text" id="serialNumber" name="serialNumber" placeholder="4505">
             </div>
             <div class="form-group">
                 <label for="yearOfManufacture">Year</label>
@@ -32,31 +28,43 @@
             </div>
             <div class="form-group">
                 <label for="category">Category</label>
-                <select id="category" name="category">
+                <select id="category" name="category" data-lua="aircraft-category">
                     <option value="airplane">Airplane</option>
                     <option value="helicopter">Helicopter</option>
-                    <option value="sailplane">Sailplane</option>
+                    <option value="sailplane">Sailplane / Glider</option>
                     <option value="balloon">Balloon</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="engineType">Engine Type</label>
-                <select id="engineType" name="engineType">
-                    <option value="">Select</option>
-                    <option value="piston">Piston</option>
-                    <option value="turboprop">Turboprop</option>
-                    <option value="turbofan">Turbofan</option>
-                    <option value="turboshaft">Turboshaft</option>
-                    <option value="electric">Electric</option>
-                </select>
+            <div id="engineFields" class="inline-form-group">
+                <div class="form-group">
+                    <label for="engineType">Engine Type</label>
+                    <select id="engineType" name="engineType">
+                        <option value="">None / N/A</option>
+                        <option value="piston">Piston</option>
+                        <option value="turboprop">Turboprop</option>
+                        <option value="turbofan">Turbofan</option>
+                        <option value="turboshaft">Turboshaft</option>
+                        <option value="electric">Electric</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="apuType">APU Type</label>
+                    <input type="text" id="apuType" name="apuType" placeholder="e.g. APS3200" class="input-short">
+                </div>
+                <div class="form-group">
+                    <label for="propType">Propeller Type</label>
+                    <input type="text" id="propType" name="propType" placeholder="MTV-12-B" class="input-short">
+                </div>
             </div>
-            <div class="form-group">
-                <label for="apuType">APU Type</label>
-                <input type="text" id="apuType" name="apuType" placeholder="e.g. APS3200" class="input-short">
-            </div>
-            <div class="form-group">
-                <label for="propType">Propeller Type</label>
-                <input type="text" id="propType" name="propType" placeholder="MTV-12-B" class="input-short">
+            <div id="gliderFields" class="inline-form-group" style="display:none">
+                <div class="form-group">
+                    <label for="wingSpan">Wing Span (m)</label>
+                    <input type="number" id="wingSpan" name="wingSpan" min="0" step="0.1" class="input-short" placeholder="15.0">
+                </div>
+                <div class="form-group">
+                    <label for="emptyWeight">Empty Weight (kg)</label>
+                    <input type="number" id="emptyWeight" name="emptyWeight" min="0" class="input-short" placeholder="220">
+                </div>
             </div>
             <div class="form-group">
                 <label for="mtow">MTOW (kg)</label>
@@ -82,6 +90,8 @@
                     <th>Category</th>
                     <th>Engine</th>
                     <th>MTOW</th>
+                    <th>Wing</th>
+                    <th>Empty</th>
                     <th>Records</th>
                     <th></th>
                 </tr>
@@ -96,6 +106,8 @@
                     <td>{{.Category}}</td>
                     <td>{{if .EngineType}}{{.EngineType}}{{else}}-{{end}}</td>
                     <td>{{if .MTOW}}{{.MTOW}} kg{{else}}-{{end}}</td>
+                    <td>{{if .WingSpanM}}{{printf "%.1f" (derefFloat .WingSpanM)}} m{{else}}-{{end}}</td>
+                    <td>{{if .EmptyWeightKg}}{{.EmptyWeightKg}} kg{{else}}-{{end}}</td>
                     <td>{{.RecordCount}}</td>
                     <td>
                         <form action="/aircraft/{{.ID}}/delete" method="POST" data-lua="confirm-delete">

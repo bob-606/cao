@@ -240,7 +240,16 @@ func runMigrations() {
 	migrations := []struct {
 		check string
 		sql   string
-	}{}
+	}{
+		{
+			check: "SELECT COUNT(*) FROM pragma_table_info('aircraft') WHERE name = 'wing_span_m'",
+			sql:   "ALTER TABLE aircraft ADD COLUMN wing_span_m REAL",
+		},
+		{
+			check: "SELECT COUNT(*) FROM pragma_table_info('aircraft') WHERE name = 'empty_weight_kg'",
+			sql:   "ALTER TABLE aircraft ADD COLUMN empty_weight_kg INTEGER",
+		},
+	}
 
 	for _, m := range migrations {
 		var count int
